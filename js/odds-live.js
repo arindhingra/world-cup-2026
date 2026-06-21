@@ -9,7 +9,7 @@
    Fully defensive: any failure (no key, quota, network, CORS, parse)
    resolves to `false` and the UI keeps the verified snapshot.
    ===================================================================== */
-const LIVE = { odds: {}, status: "snapshot", asof: null };
+const LIVE = { odds: {}, scores: {}, status: "snapshot", asof: null };
 
 /* map The Odds API team names → the names used in this site's fixtures */
 const ODDS_NAME_MAP = {
@@ -69,5 +69,38 @@ async function loadLiveOdds(){
     }
     if (matched > 0){ LIVE.status = "live"; return true; }
     return false;
+  } catch (_){ return false; }
+}
+
+/* Live SCORES — marks games that have actually finished (authoritative).
+   Lets the site drop a match the moment it goes final, with the result. */
+async function loadLiveScores(){
+  const key = (window.ODDS_API_KEY || "").trim();
+  if (!key) return false;
+  const url = "https://api.the-odds-api.com/v4/sports/soccer_fifa_world_cup/scores"
+            + "?daysFrom=3&apiKey=" + encodeURIComponent(key);
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 6000);
+    const res = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) return false;
+    const events = await res.json();
+    if (!Array.isArray(events)) return false;
+
+    let n = 0;
+    for (const ev of events){
+      const home = normTeam(ev.home_team), away = normTeam(ev.away_team);
+      if (!home || !away) continue;
+      const rec = { completed: !!ev.completed };
+      if (Array.isArray(ev.scores)){
+        const sh = ev.scores.find(s => normTeam(s.name) === home);
+        const sa = ev.scores.find(s => normTeam(s.name) === away);
+        if (sh && sa){ rec[home] = +sh.score; rec[away] = +sa.score; }
+      }
+      LIVE.scores[pairKey(home, away)] = rec;
+      if (rec.completed) n++;
+    }
+    return n >= 0;
   } catch (_){ return false; }
 }

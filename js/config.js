@@ -8,7 +8,9 @@
       500 requests/month free).
    2. Paste it between the quotes below and save.
    3. Reload the site — every match now shows live, de-vigged market odds
-      averaged across US sportsbooks, refreshed each visit.
+      averaged across US sportsbooks, refreshed each visit. The key ALSO
+      powers live final scores, so games drop from the predictions the
+      moment they finish (instead of at the end of their match day).
 
    Leave it blank to use the curated snapshot (verified 20–21 Jun 2026).
    If the key is missing, over quota, or the request fails, the site

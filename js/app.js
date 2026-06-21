@@ -14,10 +14,36 @@
     return { dow: DOW[dt.getUTCDay()], label: `${MON[m-1]} ${d}`, full:`${DOW[dt.getUTCDay()]}, ${MON[m-1]} ${d}` };
   }
 
+  /* ---------------- finished-game detection (auto-remove) ---------------- */
+  // A game is "finished" when the live scores feed marks it complete (exact,
+  // needs an API key) OR — with no key — once its match day has fully ended
+  // (05:00 UTC the following day, after which all that day's games are over).
+  function isFinished(f){
+    if (typeof LIVE !== "undefined" && LIVE.scores && typeof pairKey === "function"){
+      const s = LIVE.scores[pairKey(f.home, f.away)];
+      if (s && s.completed) return true;
+    }
+    const p = f.date.split("-").map(Number);
+    return Date.now() > Date.UTC(p[0], p[1]-1, p[2]+1, 5, 0, 0);
+  }
+  function upcomingFixtures(){ return FIXTURES.filter(f => !isFinished(f)); }
+
+  // games the live feed reports as final (with scores) — fed into the results strip
+  function finishedFromFeed(){
+    const out = [];
+    if (typeof LIVE === "undefined" || !LIVE.scores || typeof pairKey !== "function") return out;
+    FIXTURES.forEach(f=>{
+      const s = LIVE.scores[pairKey(f.home, f.away)];
+      if (s && s.completed && s[f.home] != null && s[f.away] != null)
+        out.push({ date:f.date, group:f.group, home:f.home, away:f.away, hs:s[f.home], as:s[f.away], venue:f.venue });
+    });
+    return out;
+  }
+
   /* ---------------- stat strip ---------------- */
   function renderStats(){
     const played = RESULTS.length ? 34 : 34; // verified: 34 group games played
-    $("#stat-remaining").textContent = FIXTURES.length;
+    $("#stat-remaining").textContent = upcomingFixtures().length;
     $("#stat-today").textContent = RESULTS.filter(r=>r.date==="2026-06-20").length;
     $("#stat-groups").textContent = 12;
     $("#stat-teams").textContent = 48;
@@ -26,7 +52,10 @@
   /* ---------------- results strip ---------------- */
   function renderResults(){
     const box = $("#results");
-    box.innerHTML = RESULTS.map(r=>{
+    // merge any live-feed finals (deduped) ahead of the curated results
+    const seen = new Set(RESULTS.map(r=>r.home+"|"+r.away));
+    const merged = finishedFromFeed().filter(r=>!seen.has(r.home+"|"+r.away)).concat(RESULTS);
+    box.innerHTML = merged.map(r=>{
       const today = r.date==="2026-06-20";
       const hw = r.hs>r.as, aw = r.as>r.hs;
       const dd = fmtDate(r.date);
@@ -47,10 +76,11 @@
   /* ---------------- predictions ---------------- */
   function renderPredictions(){
     const box = $("#predictions");
-    // group fixtures by date
+    // group fixtures by date — finished games are auto-removed
     const byDate = {};
-    FIXTURES.forEach(f=>{ (byDate[f.date] = byDate[f.date]||[]).push(f); });
+    upcomingFixtures().forEach(f=>{ (byDate[f.date] = byDate[f.date]||[]).push(f); });
     const dates = Object.keys(byDate).sort();
+    if (!dates.length){ box.innerHTML = `<div class="loading">All group-stage games are complete. 🏁</div>`; return; }
 
     box.innerHTML = dates.map(date=>{
       const dd = fmtDate(date);
@@ -210,11 +240,12 @@
   function updateOddsStatus(){
     const el = $("#odds-status");
     if (!el) return;
-    const n = FIXTURES.filter(f => getMarket(f)).length;
+    const up = upcomingFixtures();
+    const n = up.filter(f => getMarket(f)).length;
     const live = (typeof LIVE !== "undefined" && LIVE.status === "live");
     el.innerHTML = live
-      ? `<span class="mlive">● LIVE odds</span> The Odds API · all ${n} games`
-      : `Market snapshot · ${MARKET_ASOF} · ${n} of ${FIXTURES.length} games`;
+      ? `<span class="mlive">● LIVE odds</span> The Odds API · all ${up.length} upcoming games`
+      : `Market snapshot · ${MARKET_ASOF} · ${n} of ${up.length} upcoming games`;
   }
 
   function boot(){
@@ -230,6 +261,10 @@
         $("#groups-loading").style.display="none";
       }, 30);
     });
+    // live scores (optional) — drop finished games + show their finals
+    if (typeof loadLiveScores === "function"){
+      loadLiveScores().then(ok => { if (ok){ renderResults(); renderStats(); renderPredictions(); updateOddsStatus(); } });
+    }
     // live odds (optional) — repaint predictions if a key returns data
     if (typeof loadLiveOdds === "function"){
       loadLiveOdds().then(ok => { if (ok){ renderPredictions(); updateOddsStatus(); } });

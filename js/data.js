@@ -125,7 +125,7 @@ const STANDINGS = {
   "Paraguay":{pld:2,w:1,d:0,l:1,gf:2,ga:4}, "Türkiye":{pld:2,w:0,d:0,l:2,gf:0,ga:3},
 
   "Germany":{pld:2,w:2,d:0,l:0,gf:9,ga:2}, "Ivory Coast":{pld:2,w:1,d:0,l:1,gf:2,ga:2},
-  "Ecuador":{pld:1,w:0,d:0,l:1,gf:0,ga:1}, "Curaçao":{pld:1,w:0,d:0,l:1,gf:1,ga:7},
+  "Ecuador":{pld:2,w:0,d:1,l:1,gf:0,ga:1}, "Curaçao":{pld:2,w:0,d:1,l:1,gf:1,ga:7},
 
   "Netherlands":{pld:2,w:1,d:1,l:0,gf:7,ga:3}, "Sweden":{pld:2,w:1,d:0,l:1,gf:6,ga:6},
   "Japan":{pld:1,w:0,d:1,l:0,gf:2,ga:2}, "Tunisia":{pld:1,w:0,d:0,l:1,gf:1,ga:5},
@@ -151,6 +151,7 @@ const STANDINGS = {
 
 /* Results already played — most recent first, for the "results" strip. */
 const RESULTS = [
+  { date:"2026-06-20", group:"E", home:"Ecuador", away:"Curaçao", hs:0, as:0, venue:"Arrowhead Stadium, Kansas City" },
   { date:"2026-06-20", group:"E", home:"Germany", away:"Ivory Coast", hs:2, as:1, venue:"BMO Field, Toronto" },
   { date:"2026-06-20", group:"F", home:"Netherlands", away:"Sweden", hs:5, as:1, venue:"NRG Stadium, Houston" },
   { date:"2026-06-19", group:"C", home:"Scotland", away:"Morocco", hs:0, as:1, venue:"Gillette Stadium, Foxborough" },
@@ -169,7 +170,6 @@ const RESULTS = [
    ===================================================================== */
 const FIXTURES = [
   // ---------- Saturday 20 June (today) ----------
-  { date:"2026-06-20", group:"E", home:"Ecuador", away:"Curaçao",        venue:"Arrowhead Stadium, Kansas City" },
   { date:"2026-06-20", group:"F", home:"Tunisia", away:"Japan",          venue:"Estadio BBVA, Guadalupe" },
   // ---------- Sunday 21 June ----------
   { date:"2026-06-21", group:"G", home:"Belgium", away:"Iran",           venue:"SoFi Stadium, Inglewood" },
