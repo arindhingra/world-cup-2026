@@ -49,9 +49,11 @@
 
   function liveCard(f){
     const lv = liveOf(f);
-    const lp = MODEL.liveProbability(f.home, f.away, f.venue, lv.hs, lv.as, lv.minute);
+    // orient the feed's home/away to THIS fixture's home/away
+    const hScore = (f.home === lv.home) ? lv.hs : lv.as;
+    const aScore = (f.home === lv.home) ? lv.as : lv.hs;
+    const lp = MODEL.liveProbability(f.home, f.away, f.venue, hScore, aScore, lv.minute);
     const ph=pct(lp.pHome), pd=pct(lp.pDraw), pa=pct(lp.pAway);
-    const hw = lv.hs>lv.as, aw = lv.as>lv.hs;
     return `<div class="match live">
       <div class="match-top">
         <span class="grp-pill">Group ${f.group}</span>
@@ -59,7 +61,7 @@
       </div>
       <div class="teams">
         <div class="team-side"><span class="fl">${fl(f.home)}</span><span class="tn">${f.home}</span></div>
-        <div class="pscore"><span class="ps-val ${hw?'lead':''}">${lv.hs}<span class="dash">–</span>${lv.as}</span><span class="ps-lbl">${lv.detail||'Live'}</span></div>
+        <div class="pscore"><span class="ps-val">${hScore}<span class="dash">–</span>${aScore}</span><span class="ps-lbl">${lv.detail||'Live'}</span></div>
         <div class="team-side"><span class="fl">${fl(f.away)}</span><span class="tn">${f.away}</span></div>
       </div>
       <div class="probbar">
@@ -72,7 +74,55 @@
         <span><b>${pd}%</b> Draw</span>
         <span>${shortName(f.away)} <b>${pa}%</b></span>
       </div>
+      ${wpChart(f, lv, hScore, aScore)}
       <div class="verdict"><span class="chip">Live win probability</span>· updates with the score &amp; clock</div>
+    </div>`;
+  }
+
+  // Win-probability timeline: replay the goals minute-by-minute and plot the
+  // model's W/D/L at each point as a stacked area (home green / draw gold / away blue).
+  function wpChart(f, lv, hNow, aNow){
+    const goals = (lv.goals || []).slice().sort((a,b)=>a.minute-b.minute);
+    const now = Math.max(1, lv.minute || 1);
+    const maxX = Math.max(90, now);
+    const W = 320, H = 64;
+    const pts = [];
+    let hs=0, as=0, gi=0;
+    for (let t=0; t<=now; t++){
+      while (gi<goals.length && goals[gi].minute<=t){
+        if (goals[gi].team===f.home) hs++; else if (goals[gi].team===f.away) as++; gi++;
+      }
+      const p = MODEL.liveProbability(f.home, f.away, f.venue, hs, as, t);
+      pts.push({ t, cH:p.pHome, cHD:p.pHome+p.pDraw });
+    }
+    if (pts.length < 2) return "";
+    const x = t => (t/maxX*W).toFixed(1);
+    const y = v => (H*(1-v)).toFixed(1);
+    const band = (loKey, hiKey, lo0) => {
+      const up = pts.map(p => `${x(p.t)} ${y(p[hiKey])}`);
+      const lo = pts.slice().reverse().map(p => `${x(p.t)} ${y(lo0!==undefined?lo0:p[loKey])}`);
+      return `M ${up.join(" L ")} L ${lo.join(" L ")} Z`;
+    };
+    const homeArea = band(null, "cH", 0);
+    const drawArea = band("cH", "cHD");
+    const awayArea = (function(){
+      const up = pts.map(p => `${x(p.t)} 0`);
+      const lo = pts.slice().reverse().map(p => `${x(p.t)} ${y(p.cHD)}`);
+      return `M ${up.join(" L ")} L ${lo.join(" L ")} Z`;
+    })();
+    const nowX = x(now);
+    const marks = goals.map(g => `<circle cx="${x(Math.min(g.minute,maxX))}" cy="${H-3}" r="2.6" fill="${g.team===f.home?'var(--green)':'#7d92cf'}" stroke="#0a0e1a" stroke-width="1"/>`).join("");
+    return `<div class="wpchart">
+      <div class="wpc-head"><span>📈 Win-probability timeline</span><span class="wpc-now">⚽ ${goals.length} ${goals.length===1?'goal':'goals'}</span></div>
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="wpc-svg">
+        <path d="${homeArea}" fill="var(--green)" opacity="0.9"/>
+        <path d="${drawArea}" fill="var(--draw)" opacity="0.85"/>
+        <path d="${awayArea}" fill="#5b6b95" opacity="0.85"/>
+        <line x1="50%" y1="0" x2="50%" y2="${H}" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="3 3"/>
+        <line x1="${nowX}" y1="0" x2="${nowX}" y2="${H}" stroke="#fff" stroke-width="1.5" opacity="0.65"/>
+        ${marks}
+      </svg>
+      <div class="wpc-axis"><span>0'</span><span>45'</span><span>90'</span></div>
     </div>`;
   }
 
@@ -313,8 +363,9 @@
     // ESPN live feed (no key): live scores + minutes + real results → standings.
     // Poll every 45s so scores, the clock and the tables stay current.
     if (typeof loadEspnLive === "function"){
-      const tick = () => loadEspnLive().then(ok => {
-        if (!ok) return;
+      const tick = () => loadEspnLive().then(async ok => {
+        if (!ok){ renderLiveNow(); return; }
+        if (typeof loadLiveTimelines === "function") await loadLiveTimelines();  // goal events → WP chart
         renderLiveNow(); renderResults(); renderStats(); renderPredictions(); updateOddsStatus();
         const sig = finishedSig();
         if (sig !== lastSig){ lastSig = sig; refreshGroups(); }  // a game went final → re-sim

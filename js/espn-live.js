@@ -23,7 +23,7 @@ function espnMinute(clock, state, detail){
 }
 
 async function loadEspnLive(){
-  if (!LIVE.inplay) LIVE.inplay = {};
+  LIVE.inplay = {};   // rebuilt each poll so games that ended clear out
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 7000);
@@ -57,7 +57,7 @@ async function loadEspnLive(){
       } else if (state === "in"){
         LIVE.scores[key] = { completed: false, [home]: hs, [away]: as };
         LIVE.inplay[key] = {
-          home, away, hs, as,
+          home, away, hs, as, eventId: ev.id,
           clock: status.displayClock || type.shortDetail || "LIVE",
           detail: type.shortDetail || "",
           minute: espnMinute(status.displayClock, state, type.shortDetail)
@@ -68,4 +68,35 @@ async function loadEspnLive(){
     if (any){ LIVE.status = "live"; LIVE.asof = Date.now(); }
     return any;
   } catch (_){ return false; }
+}
+
+/* For each in-play game, pull its goal events (minute + scoring team) from
+   ESPN's match summary, so the win-probability timeline can be reconstructed. */
+async function loadLiveTimelines(){
+  if (!LIVE.inplay) return false;
+  const keys = Object.keys(LIVE.inplay).filter(k => LIVE.inplay[k].eventId);
+  if (!keys.length) return false;
+  await Promise.all(keys.map(async key => {
+    const ip = LIVE.inplay[key];
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 7000);
+      const res = await fetch(
+        "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event=" + ip.eventId,
+        { signal: ctrl.signal, cache: "no-store" });
+      clearTimeout(timer);
+      if (!res.ok) return;
+      const d = await res.json();
+      const goals = [];
+      for (const e of (d.keyEvents || [])){
+        if (!e.scoringPlay) continue;                       // goals only
+        const team = normTeam((e.team || {}).displayName);
+        const min = parseInt((e.clock || {}).displayValue, 10);
+        if (team && !isNaN(min)) goals.push({ minute: min, team });
+      }
+      goals.sort((a, b) => a.minute - b.minute);
+      ip.goals = goals;
+    } catch (_){ /* leave goals undefined → card just omits the chart */ }
+  }));
+  return true;
 }
