@@ -31,18 +31,6 @@
   }
   function upcomingFixtures(){ return FIXTURES.filter(f => !isFinished(f)); }
 
-  // games the live feed reports as final (with scores) — fed into the results strip
-  function finishedFromFeed(){
-    const out = [];
-    if (typeof LIVE === "undefined" || !LIVE.scores || typeof pairKey !== "function") return out;
-    FIXTURES.forEach(f=>{
-      const s = LIVE.scores[pairKey(f.home, f.away)];
-      if (s && s.completed && s[f.home] != null && s[f.away] != null)
-        out.push({ date:f.date, group:f.group, home:f.home, away:f.away, hs:s[f.home], as:s[f.away], venue:f.venue });
-    });
-    return out;
-  }
-
   /* ---------------- stat strip ---------------- */
   function renderStats(){
     const played = RESULTS.length ? 34 : 34; // verified: 34 group games played
@@ -57,7 +45,7 @@
     const box = $("#results");
     // merge any live-feed finals (deduped) ahead of the curated results
     const seen = new Set(RESULTS.map(r=>r.home+"|"+r.away));
-    const merged = finishedFromFeed().filter(r=>!seen.has(r.home+"|"+r.away)).concat(RESULTS);
+    const merged = liveFinalsList().filter(r=>!seen.has(r.home+"|"+r.away)).concat(RESULTS);
     box.innerHTML = merged.map(r=>{
       const today = r.date==="2026-06-20";
       const hw = r.hs>r.as, aw = r.as>r.hs;
@@ -207,11 +195,11 @@
   function shortName(t){ return t.length>11 ? t.split(" ")[0] : t; }
 
   /* ---------------- group tables ---------------- */
-  function renderGroups(odds){
+  function renderGroups(odds, standings){
     const box = $("#groups");
     const groups = "ABCDEFGHIJKL".split("");
     box.innerHTML = groups.map(g=>{
-      const rows = MODEL.currentTable(g);
+      const rows = MODEL.currentTable(g, standings);
       const trs = rows.map((r,i)=>{
         const o = odds[r.team];
         const adv = pct(o.advance);
@@ -251,22 +239,24 @@
       : `Market snapshot · ${MARKET_ASOF} · ${n} of ${up.length} upcoming games`;
   }
 
+  // standings + qualification odds, rebuilt from any live final scores
+  function refreshGroups(){
+    const standings = effectiveStandings();
+    const odds = MODEL.simulate(15000, standings, remainingForSim());
+    renderGroups(odds, standings);
+    const ld = $("#groups-loading"); if (ld) ld.style.display = "none";
+  }
+
   function boot(){
     renderStats();
     renderResults();
     renderPredictions();
     updateOddsStatus();
-    // simulation is heavier — run after first paint
-    requestAnimationFrame(()=>{
-      setTimeout(()=>{
-        const odds = MODEL.simulate(15000);
-        renderGroups(odds);
-        $("#groups-loading").style.display="none";
-      }, 30);
-    });
-    // live scores (optional) — drop finished games + show their finals
+    // simulation is heavier — defer so it doesn't block first paint
+    setTimeout(refreshGroups, 50);
+    // live scores (optional) — drop finished games, update tables + odds
     if (typeof loadLiveScores === "function"){
-      loadLiveScores().then(ok => { if (ok){ renderResults(); renderStats(); renderPredictions(); updateOddsStatus(); } });
+      loadLiveScores().then(ok => { if (ok){ renderResults(); renderStats(); renderPredictions(); refreshGroups(); updateOddsStatus(); } });
     }
     // live odds (optional) — repaint predictions if a key returns data
     if (typeof loadLiveOdds === "function"){

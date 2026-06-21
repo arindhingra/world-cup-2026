@@ -93,21 +93,26 @@ const MODEL = (() => {
   /* =================================================================
      MONTE CARLO — qualification probabilities
      ================================================================= */
-  function simulate(iterations){
+  // baseStandings + fixtures default to the static snapshot, but callers can
+  // pass live-updated standings and the still-to-play fixtures so the odds
+  // re-derive as real results come in.
+  function simulate(iterations, baseStandings, fixtures){
     iterations = iterations || 15000;
+    baseStandings = baseStandings || STANDINGS;
+    fixtures = fixtures || FIXTURES;
     const groups = "ABCDEFGHIJKL".split("");
     const adv={}, win={}, second={}, third={};
     for (const t in TEAMS){ adv[t]=0; win[t]=0; second[t]=0; third[t]=0; }
 
-    const fx = FIXTURES.map(f => {
+    const fx = fixtures.map(f => {
       const [lh,la] = expectedGoals(f.home, f.away, f.venue);
       return { home:f.home, away:f.away, lh, la };
     });
 
     for (let it=0; it<iterations; it++){
       const tbl = {};
-      for (const t in STANDINGS){
-        const s = STANDINGS[t];
+      for (const t in baseStandings){
+        const s = baseStandings[t];
         tbl[t] = { team:t, group:TEAMS[t].group, pts:s.w*3+s.d, gf:s.gf, ga:s.ga,
                    w:s.w, d:s.d, l:s.l, pld:s.pld };
       }
@@ -144,9 +149,10 @@ const MODEL = (() => {
     return Math.random()-0.5;
   }
 
-  function currentTable(group){
+  function currentTable(group, standings){
+    standings = standings || STANDINGS;
     return Object.keys(TEAMS).filter(t=>TEAMS[t].group===group).map(t=>{
-      const s = STANDINGS[t];
+      const s = standings[t];
       return { team:t, ...s, gd:s.gf-s.ga, pts:s.w*3+s.d };
     }).sort((a,b)=> b.pts-a.pts || b.gd-a.gd || b.gf-a.gf || a.team.localeCompare(b.team));
   }

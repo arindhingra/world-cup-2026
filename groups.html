@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Cup 2026 · Groups &amp; Standings</title>
+<meta name="description" content="Live 2026 FIFA World Cup group standings and qualification probabilities — all 12 groups, updated as each game finishes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+<link rel="stylesheet" href="css/styles.css?v=2">
+</head>
+<body>
+<div class="pitch-pattern"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="index.html" class="brand">
+      <span class="crest">⚽</span>
+      <div><b>World Cup 2026</b><span>Group-Stage Analytics</span></div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Predictions</a>
+      <a href="groups.html" class="active">Groups</a>
+      <a href="history.html"><span class="hide-sm">Past </span>Champions</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker"><span class="live-dot"></span> Live Standings · 12 Groups · 48 Nations</div>
+    <h1>Groups &amp; Qualification</h1>
+    <p class="sub">Every group's table and each nation's chance of reaching the Round of 32 — the top two of every group advance, joined by the eight best third-placed teams. <b>Tables update automatically as each game goes final.</b></p>
+    <div class="host-row" id="groups-live" style="margin-top:18px"></div>
+  </div>
+</header>
+
+<!-- GROUPS -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2><span class="tag">📊</span> All 12 Groups</h2>
+        <p>Full standings with qualification odds from 15,000 simulations of every remaining game. <span class="qtag in" style="vertical-align:middle">Q</span> = virtually through (≥99.5%) · <span class="qtag out" style="vertical-align:middle">×</span> = virtually out (≤0.5%) · <b>1st</b> = chance of winning the group.</p>
+      </div>
+    </div>
+    <div class="loading" id="groups-loading"><span class="spinner"></span> Simulating 15,000 tournaments…</div>
+    <div class="groups-full" id="groups-full"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>World Cup 2026 Group-Stage Analytics</b> — an independent, data-driven fan project.<br>
+    Standings update live as games finish (with an Odds API key) · qualification odds by Elo + Monte Carlo · Not affiliated with FIFA.</p>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/model.js"></script>
+<script src="js/config.js"></script>
+<script src="js/odds-live.js"></script>
+<script src="js/standings.js"></script>
+<script src="js/groups-page.js"></script>
+</body>
+</html>
