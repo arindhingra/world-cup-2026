@@ -15,14 +15,17 @@
   }
 
   /* ---------------- finished-game detection (auto-remove) ---------------- */
-  // A game is "finished" when the live scores feed marks it complete (exact,
-  // needs an API key) OR — with no key — once its match day has fully ended
-  // (05:00 UTC the following day, after which all that day's games are over).
+  // A game is "finished" when (1) the live scores feed marks it complete
+  // (exact, needs an API key) or (2) — with no key — 2.5 hours have elapsed
+  // since its kick-off, by which point any group game is certainly over.
+  const FT_BUFFER_MS = 150 * 60 * 1000; // 2h30m after kick-off
   function isFinished(f){
     if (typeof LIVE !== "undefined" && LIVE.scores && typeof pairKey === "function"){
       const s = LIVE.scores[pairKey(f.home, f.away)];
       if (s && s.completed) return true;
     }
+    if (f.ko){ return Date.now() > Date.parse(f.ko) + FT_BUFFER_MS; }
+    // last-ditch fallback for any game missing a kick-off time
     const p = f.date.split("-").map(Number);
     return Date.now() > Date.UTC(p[0], p[1]-1, p[2]+1, 5, 0, 0);
   }

@@ -168,52 +168,54 @@ const RESULTS = [
    REMAINING GROUP-STAGE FIXTURES (38 matches, 21–27 June 2026).
    The model predicts every one of these.
    ===================================================================== */
+// `ko` = exact kick-off in UTC. Each game auto-drops ~2.5h after kick-off
+// (when it is certainly finished), so the site self-cleans with no API key.
 const FIXTURES = [
   // ---------- Saturday 20 June (today) ----------
-  { date:"2026-06-20", group:"F", home:"Tunisia", away:"Japan",          venue:"Estadio BBVA, Guadalupe" },
+  { date:"2026-06-20", group:"F", home:"Tunisia", away:"Japan",          ko:"2026-06-21T04:00:00Z", venue:"Estadio BBVA, Guadalupe" },
   // ---------- Sunday 21 June ----------
-  { date:"2026-06-21", group:"G", home:"Belgium", away:"Iran",           venue:"SoFi Stadium, Inglewood" },
-  { date:"2026-06-21", group:"G", home:"New Zealand", away:"Egypt",      venue:"BC Place, Vancouver" },
-  { date:"2026-06-21", group:"H", home:"Spain", away:"Saudi Arabia",     venue:"Mercedes-Benz Stadium, Atlanta" },
-  { date:"2026-06-21", group:"H", home:"Uruguay", away:"Cape Verde",     venue:"Hard Rock Stadium, Miami" },
+  { date:"2026-06-21", group:"H", home:"Spain", away:"Saudi Arabia",     ko:"2026-06-21T16:00:00Z", venue:"Mercedes-Benz Stadium, Atlanta" },
+  { date:"2026-06-21", group:"G", home:"Belgium", away:"Iran",           ko:"2026-06-21T19:00:00Z", venue:"SoFi Stadium, Inglewood" },
+  { date:"2026-06-21", group:"H", home:"Uruguay", away:"Cape Verde",     ko:"2026-06-21T22:00:00Z", venue:"Hard Rock Stadium, Miami" },
+  { date:"2026-06-21", group:"G", home:"New Zealand", away:"Egypt",      ko:"2026-06-22T01:00:00Z", venue:"BC Place, Vancouver" },
   // ---------- Monday 22 June ----------
-  { date:"2026-06-22", group:"I", home:"France", away:"Iraq",            venue:"Lincoln Financial Field, Philadelphia" },
-  { date:"2026-06-22", group:"I", home:"Norway", away:"Senegal",         venue:"MetLife Stadium, East Rutherford" },
-  { date:"2026-06-22", group:"J", home:"Argentina", away:"Austria",      venue:"AT&T Stadium, Arlington" },
-  { date:"2026-06-22", group:"J", home:"Jordan", away:"Algeria",         venue:"Levi's Stadium, Santa Clara" },
+  { date:"2026-06-22", group:"J", home:"Argentina", away:"Austria",      ko:"2026-06-22T17:00:00Z", venue:"AT&T Stadium, Arlington" },
+  { date:"2026-06-22", group:"I", home:"France", away:"Iraq",            ko:"2026-06-22T21:00:00Z", venue:"Lincoln Financial Field, Philadelphia" },
+  { date:"2026-06-22", group:"I", home:"Norway", away:"Senegal",         ko:"2026-06-23T00:00:00Z", venue:"MetLife Stadium, East Rutherford" },
+  { date:"2026-06-22", group:"J", home:"Jordan", away:"Algeria",         ko:"2026-06-23T03:00:00Z", venue:"Levi's Stadium, Santa Clara" },
   // ---------- Tuesday 23 June ----------
-  { date:"2026-06-23", group:"K", home:"Portugal", away:"Uzbekistan",    venue:"NRG Stadium, Houston" },
-  { date:"2026-06-23", group:"K", home:"Colombia", away:"DR Congo",      venue:"Estadio Akron, Zapopan" },
-  { date:"2026-06-23", group:"L", home:"England", away:"Ghana",          venue:"Gillette Stadium, Foxborough" },
-  { date:"2026-06-23", group:"L", home:"Panama", away:"Croatia",         venue:"BMO Field, Toronto" },
+  { date:"2026-06-23", group:"K", home:"Portugal", away:"Uzbekistan",    ko:"2026-06-23T17:00:00Z", venue:"NRG Stadium, Houston" },
+  { date:"2026-06-23", group:"L", home:"England", away:"Ghana",          ko:"2026-06-23T20:00:00Z", venue:"Gillette Stadium, Foxborough" },
+  { date:"2026-06-23", group:"L", home:"Panama", away:"Croatia",         ko:"2026-06-23T23:00:00Z", venue:"BMO Field, Toronto" },
+  { date:"2026-06-23", group:"K", home:"Colombia", away:"DR Congo",      ko:"2026-06-24T02:00:00Z", venue:"Estadio Akron, Zapopan" },
   // ---------- Wednesday 24 June (Matchday 3: A, B, C) ----------
-  { date:"2026-06-24", group:"A", home:"Czechia", away:"Mexico",         venue:"Estadio Azteca, Mexico City" },
-  { date:"2026-06-24", group:"A", home:"South Africa", away:"South Korea",venue:"Estadio BBVA, Guadalupe" },
-  { date:"2026-06-24", group:"B", home:"Switzerland", away:"Canada",     venue:"BC Place, Vancouver" },
-  { date:"2026-06-24", group:"B", home:"Bosnia & Herzegovina", away:"Qatar", venue:"Lumen Field, Seattle" },
-  { date:"2026-06-24", group:"C", home:"Scotland", away:"Brazil",        venue:"Hard Rock Stadium, Miami" },
-  { date:"2026-06-24", group:"C", home:"Morocco", away:"Haiti",          venue:"Mercedes-Benz Stadium, Atlanta" },
+  { date:"2026-06-24", group:"B", home:"Switzerland", away:"Canada",     ko:"2026-06-24T19:00:00Z", venue:"BC Place, Vancouver" },
+  { date:"2026-06-24", group:"B", home:"Bosnia & Herzegovina", away:"Qatar", ko:"2026-06-24T19:00:00Z", venue:"Lumen Field, Seattle" },
+  { date:"2026-06-24", group:"C", home:"Scotland", away:"Brazil",        ko:"2026-06-24T22:00:00Z", venue:"Hard Rock Stadium, Miami" },
+  { date:"2026-06-24", group:"C", home:"Morocco", away:"Haiti",          ko:"2026-06-24T22:00:00Z", venue:"Mercedes-Benz Stadium, Atlanta" },
+  { date:"2026-06-24", group:"A", home:"Czechia", away:"Mexico",         ko:"2026-06-25T01:00:00Z", venue:"Estadio Azteca, Mexico City" },
+  { date:"2026-06-24", group:"A", home:"South Africa", away:"South Korea",ko:"2026-06-25T01:00:00Z", venue:"Estadio BBVA, Guadalupe" },
   // ---------- Thursday 25 June (Matchday 3: D, E, F) ----------
-  { date:"2026-06-25", group:"D", home:"Türkiye", away:"United States",  venue:"SoFi Stadium, Inglewood" },
-  { date:"2026-06-25", group:"D", home:"Paraguay", away:"Australia",     venue:"Levi's Stadium, Santa Clara" },
-  { date:"2026-06-25", group:"E", home:"Curaçao", away:"Ivory Coast",    venue:"Lincoln Financial Field, Philadelphia" },
-  { date:"2026-06-25", group:"E", home:"Ecuador", away:"Germany",        venue:"MetLife Stadium, East Rutherford" },
-  { date:"2026-06-25", group:"F", home:"Japan", away:"Sweden",           venue:"AT&T Stadium, Arlington" },
-  { date:"2026-06-25", group:"F", home:"Tunisia", away:"Netherlands",    venue:"Arrowhead Stadium, Kansas City" },
+  { date:"2026-06-25", group:"E", home:"Curaçao", away:"Ivory Coast",    ko:"2026-06-25T20:00:00Z", venue:"Lincoln Financial Field, Philadelphia" },
+  { date:"2026-06-25", group:"E", home:"Ecuador", away:"Germany",        ko:"2026-06-25T20:00:00Z", venue:"MetLife Stadium, East Rutherford" },
+  { date:"2026-06-25", group:"F", home:"Japan", away:"Sweden",           ko:"2026-06-25T23:00:00Z", venue:"AT&T Stadium, Arlington" },
+  { date:"2026-06-25", group:"F", home:"Tunisia", away:"Netherlands",    ko:"2026-06-25T23:00:00Z", venue:"Arrowhead Stadium, Kansas City" },
+  { date:"2026-06-25", group:"D", home:"Türkiye", away:"United States",  ko:"2026-06-26T02:00:00Z", venue:"SoFi Stadium, Inglewood" },
+  { date:"2026-06-25", group:"D", home:"Paraguay", away:"Australia",     ko:"2026-06-26T02:00:00Z", venue:"Levi's Stadium, Santa Clara" },
   // ---------- Friday 26 June (Matchday 3: G, H, I) ----------
-  { date:"2026-06-26", group:"G", home:"Egypt", away:"Iran",            venue:"Lumen Field, Seattle" },
-  { date:"2026-06-26", group:"G", home:"New Zealand", away:"Belgium",   venue:"BC Place, Vancouver" },
-  { date:"2026-06-26", group:"H", home:"Cape Verde", away:"Saudi Arabia",venue:"NRG Stadium, Houston" },
-  { date:"2026-06-26", group:"H", home:"Uruguay", away:"Spain",         venue:"Estadio Akron, Zapopan" },
-  { date:"2026-06-26", group:"I", home:"Norway", away:"France",         venue:"Gillette Stadium, Foxborough" },
-  { date:"2026-06-26", group:"I", home:"Senegal", away:"Iraq",          venue:"BMO Field, Toronto" },
+  { date:"2026-06-26", group:"H", home:"Uruguay", away:"Spain",         ko:"2026-06-27T00:00:00Z", venue:"Estadio Akron, Zapopan" },
+  { date:"2026-06-26", group:"I", home:"Norway", away:"France",         ko:"2026-06-26T19:00:00Z", venue:"Gillette Stadium, Foxborough" },
+  { date:"2026-06-26", group:"I", home:"Senegal", away:"Iraq",          ko:"2026-06-26T19:00:00Z", venue:"BMO Field, Toronto" },
+  { date:"2026-06-26", group:"H", home:"Cape Verde", away:"Saudi Arabia",ko:"2026-06-27T00:00:00Z", venue:"NRG Stadium, Houston" },
+  { date:"2026-06-26", group:"G", home:"Egypt", away:"Iran",            ko:"2026-06-27T03:00:00Z", venue:"Lumen Field, Seattle" },
+  { date:"2026-06-26", group:"G", home:"New Zealand", away:"Belgium",   ko:"2026-06-27T03:00:00Z", venue:"BC Place, Vancouver" },
   // ---------- Saturday 27 June (Matchday 3: J, K, L) ----------
-  { date:"2026-06-27", group:"J", home:"Algeria", away:"Austria",       venue:"Arrowhead Stadium, Kansas City" },
-  { date:"2026-06-27", group:"J", home:"Jordan", away:"Argentina",      venue:"AT&T Stadium, Arlington" },
-  { date:"2026-06-27", group:"K", home:"Colombia", away:"Portugal",     venue:"Hard Rock Stadium, Miami" },
-  { date:"2026-06-27", group:"K", home:"DR Congo", away:"Uzbekistan",   venue:"Mercedes-Benz Stadium, Atlanta" },
-  { date:"2026-06-27", group:"L", home:"Panama", away:"England",        venue:"MetLife Stadium, East Rutherford" },
-  { date:"2026-06-27", group:"L", home:"Croatia", away:"Ghana",         venue:"Lincoln Financial Field, Philadelphia" }
+  { date:"2026-06-27", group:"L", home:"Panama", away:"England",        ko:"2026-06-27T21:00:00Z", venue:"MetLife Stadium, East Rutherford" },
+  { date:"2026-06-27", group:"L", home:"Croatia", away:"Ghana",         ko:"2026-06-27T21:00:00Z", venue:"Lincoln Financial Field, Philadelphia" },
+  { date:"2026-06-27", group:"K", home:"Colombia", away:"Portugal",     ko:"2026-06-27T23:30:00Z", venue:"Hard Rock Stadium, Miami" },
+  { date:"2026-06-27", group:"K", home:"DR Congo", away:"Uzbekistan",   ko:"2026-06-27T23:30:00Z", venue:"Mercedes-Benz Stadium, Atlanta" },
+  { date:"2026-06-27", group:"J", home:"Algeria", away:"Austria",       ko:"2026-06-28T02:00:00Z", venue:"Arrowhead Stadium, Kansas City" },
+  { date:"2026-06-27", group:"J", home:"Jordan", away:"Argentina",      ko:"2026-06-28T02:00:00Z", venue:"AT&T Stadium, Arlington" }
 ];
 
 /* =====================================================================

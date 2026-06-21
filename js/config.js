@@ -10,7 +10,7 @@
    3. Reload the site — every match now shows live, de-vigged market odds
       averaged across US sportsbooks, refreshed each visit. The key ALSO
       powers live final scores, so games drop from the predictions the
-      moment they finish (instead of at the end of their match day).
+      exact moment they go final (instead of ~2.5 hours after kick-off).
 
    Leave it blank to use the curated snapshot (verified 20–21 Jun 2026).
    If the key is missing, over quota, or the request fails, the site
