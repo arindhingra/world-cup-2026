@@ -194,7 +194,7 @@
       `<div class="mcell"><span class="mteam">${team}</span>${odds?`<b>${odds}</b>`:``}<span class="mpc">${m(p)}%</span></div>`;
     const right = mk.live
       ? `<span class="mlive">● LIVE · ${mk.book.replace('live · ','')}</span>`
-      : `<span class="book">${mk.book} · ${MARKET_ASOF}</span>`;
+      : `<span class="book">${mk.book}${mk.est?'*':''} · ${MARKET_ASOF}</span>`;
     return `<div class="market">
       <div class="market-top"><span>📈 Betting market</span>${right}</div>
       <div class="market-cells">

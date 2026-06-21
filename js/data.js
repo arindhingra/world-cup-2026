@@ -225,28 +225,55 @@ const FIXTURES = [
    Keyed "Home|Away" to match the fixtures above.
    ===================================================================== */
 const MARKET_ASOF = "20–21 Jun 2026";
+// De-vigged three-way (1X2) moneyline odds for ALL remaining games.
+// `est:true` = only a two-way price was published, so the draw line is
+// interpolated from the standard favourite/draw relationship.
 const MARKET = {
   // ---- Saturday 20 June ----
-  "Tunisia|Japan":           { h:"+600",  d:"+310", a:"-185",  ph:0.14, pd:0.23, pa:0.63, book:"FanDuel" },
+  "Tunisia|Japan":               { h:"+600",  d:"+310", a:"-185",  ph:0.14, pd:0.23, pa:0.63, book:"FanDuel" },
   // ---- Sunday 21 June ----
-  "Belgium|Iran":            { h:"-250",  d:"+360", a:"+700",  ph:0.68, pd:0.21, pa:0.12, book:"consensus" },
-  "Spain|Saudi Arabia":      { h:"-1200", d:"+900", a:"+2200", ph:0.87, pd:0.09, pa:0.04, book:"bet365" },
-  "Uruguay|Cape Verde":      { h:"-209",  d:"+320", a:"+650",  ph:0.65, pd:0.23, pa:0.12, book:"bet365" },
+  "Spain|Saudi Arabia":          { h:"-1200", d:"+900", a:"+2200", ph:0.87, pd:0.09, pa:0.04, book:"bet365" },
+  "Belgium|Iran":                { h:"-250",  d:"+360", a:"+700",  ph:0.68, pd:0.21, pa:0.12, book:"consensus" },
+  "Uruguay|Cape Verde":          { h:"-209",  d:"+320", a:"+650",  ph:0.65, pd:0.23, pa:0.12, book:"bet365" },
+  "New Zealand|Egypt":           { h:"+490",  d:"+300", a:"-170",  ph:0.16, pd:0.24, pa:0.60, book:"FanDuel" },
   // ---- Monday 22 June ----
-  "France|Iraq":             { h:"-500",  d:"+600", a:"+1200", ph:0.79, pd:0.14, pa:0.07, book:"bet365" },
-  "Argentina|Austria":       { h:"-167",  d:"+300", a:"+475",  ph:0.60, pd:0.24, pa:0.17, book:"bet365" },
+  "Argentina|Austria":           { h:"-167",  d:"+300", a:"+475",  ph:0.60, pd:0.24, pa:0.17, book:"bet365" },
+  "France|Iraq":                 { h:"-500",  d:"+600", a:"+1200", ph:0.79, pd:0.14, pa:0.07, book:"bet365" },
+  "Norway|Senegal":              { h:"+135",  d:"+240", a:"+210",  ph:0.41, pd:0.28, pa:0.31, book:"bet365" },
+  "Jordan|Algeria":              { h:"+650",  d:"+290", a:"-209",  ph:0.13, pd:0.24, pa:0.63, book:"bet365" },
   // ---- Tuesday 23 June ----
-  "Portugal|Uzbekistan":     { h:"-350",  d:"+475", a:"+900",  ph:0.74, pd:0.16, pa:0.10, book:"bet365" },
-  "England|Ghana":           { h:"-426",  d:"+567", a:"+1329", ph:0.79, pd:0.15, pa:0.07, book:"DraftKings" },
+  "Portugal|Uzbekistan":         { h:"-350",  d:"+475", a:"+900",  ph:0.74, pd:0.16, pa:0.10, book:"bet365" },
+  "England|Ghana":               { h:"-426",  d:"+567", a:"+1329", ph:0.79, pd:0.15, pa:0.07, book:"DraftKings" },
+  "Panama|Croatia":              { h:"+500",  d:"+300", a:"-188",  ph:0.16, pd:0.23, pa:0.61, book:"bet365" },
+  "Colombia|DR Congo":           { h:"-200",  d:"+333", a:"+550",  ph:0.63, pd:0.22, pa:0.15, book:"bet365" },
   // ---- Wednesday 24 June ----
-  "Switzerland|Canada":      { h:"+145",  d:"+220", a:"+225",  ph:0.40, pd:0.30, pa:0.30, book:"Oddschecker" },
-  "Scotland|Brazil":         { h:"+800",  d:"+175", a:"-250",  ph:0.09, pd:0.31, pa:0.60, book:"Oddschecker" },
+  "Switzerland|Canada":          { h:"+145",  d:"+220", a:"+225",  ph:0.40, pd:0.30, pa:0.30, book:"Oddschecker" },
+  "Bosnia & Herzegovina|Qatar":  { h:"-225",  d:"+400", a:"+550",  ph:0.66, pd:0.19, pa:0.15, book:"bet365" },
+  "Scotland|Brazil":             { h:"+800",  d:"+175", a:"-250",  ph:0.09, pd:0.31, pa:0.60, book:"Oddschecker" },
+  "Morocco|Haiti":               { h:"-275",  d:"+360", a:"+1500", ph:0.72, pd:0.21, pa:0.06, book:"ESPN", est:true },
+  "Czechia|Mexico":              { h:"+255",  d:"+290", a:"+105",  ph:0.27, pd:0.25, pa:0.48, book:"bet365" },
+  "South Africa|South Korea":    { h:"+490",  d:"+300", a:"-155",  ph:0.16, pd:0.24, pa:0.59, book:"bet365" },
   // ---- Thursday 25 June ----
-  "Türkiye|United States":   { h:"+150",  d:"+285", a:"+160",  ph:0.38, pd:0.25, pa:0.37, book:"DraftKings" },
-  "Ecuador|Germany":         { h:"+500",  d:"+320", a:"-195",  ph:0.16, pd:0.22, pa:0.62, book:"consensus" },
-  "Japan|Sweden":            { h:"+120",  d:"+240", a:"+250",  ph:0.44, pd:0.28, pa:0.28, book:"Oddschecker" },
+  "Curaçao|Ivory Coast":         { h:"+750",  d:"+450", a:"-290",  ph:0.11, pd:0.17, pa:0.71, book:"bet365" },
+  "Ecuador|Germany":             { h:"+500",  d:"+320", a:"-195",  ph:0.16, pd:0.22, pa:0.62, book:"consensus" },
+  "Japan|Sweden":                { h:"+120",  d:"+240", a:"+250",  ph:0.44, pd:0.28, pa:0.28, book:"Oddschecker" },
+  "Tunisia|Netherlands":         { h:"+620",  d:"+340", a:"-200",  ph:0.13, pd:0.22, pa:0.65, book:"Oddschecker" },
+  "Türkiye|United States":       { h:"+150",  d:"+285", a:"+160",  ph:0.38, pd:0.25, pa:0.37, book:"DraftKings" },
+  "Paraguay|Australia":          { h:"+120",  d:"+250", a:"+255",  ph:0.44, pd:0.28, pa:0.28, book:"ESPN", est:true },
   // ---- Friday 26 June ----
-  "Norway|France":           { h:"+330",  d:"+290", a:"-140",  ph:0.22, pd:0.24, pa:0.54, book:"ESPN" }
+  "Uruguay|Spain":               { h:"+500",  d:"+300", a:"-185",  ph:0.16, pd:0.23, pa:0.61, book:"bet365" },
+  "Norway|France":               { h:"+330",  d:"+290", a:"-140",  ph:0.22, pd:0.24, pa:0.54, book:"ESPN" },
+  "Senegal|Iraq":                { h:"-215",  d:"+350", a:"+600",  ph:0.65, pd:0.21, pa:0.14, book:"bet365" },
+  "Cape Verde|Saudi Arabia":     { h:"+180",  d:"+270", a:"+145",  ph:0.34, pd:0.26, pa:0.39, book:"Oddschecker" },
+  "Egypt|Iran":                  { h:"+400",  d:"+250", a:"-138",  ph:0.19, pd:0.27, pa:0.54, book:"bet365" },
+  "New Zealand|Belgium":         { h:"+600",  d:"+360", a:"-333",  ph:0.13, pd:0.19, pa:0.68, book:"consensus", est:true },
+  // ---- Saturday 27 June ----
+  "Panama|England":              { h:"+1000", d:"+450", a:"-450",  ph:0.08, pd:0.17, pa:0.75, book:"Betfair" },
+  "Croatia|Ghana":               { h:"-140",  d:"+250", a:"+450",  ph:0.55, pd:0.27, pa:0.17, book:"ESPN" },
+  "Colombia|Portugal":           { h:"+240",  d:"+225", a:"+110",  ph:0.27, pd:0.29, pa:0.44, book:"Betfair" },
+  "DR Congo|Uzbekistan":         { h:"+115",  d:"+270", a:"+240",  ph:0.45, pd:0.26, pa:0.29, book:"Oddschecker" },
+  "Algeria|Austria":             { h:"+198",  d:"+230", a:"+150",  ph:0.32, pd:0.29, pa:0.39, book:"ESPN", est:true },
+  "Jordan|Argentina":            { h:"+1400", d:"+475", a:"-550",  ph:0.06, pd:0.16, pa:0.78, book:"ESPN", est:true }
 };
 
 /* All FIFA World Cup finals 1930–2022 (verified). */
