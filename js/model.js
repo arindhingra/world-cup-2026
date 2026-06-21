@@ -141,6 +141,22 @@ const MODEL = (() => {
     return out;
   }
 
+  /* live in-play win/draw/loss given the current score and minute:
+     only the goals still to come are random (pre-match xG scaled by the
+     fraction of the match remaining), added on top of the current score. */
+  function liveProbability(home, away, venue, hs, as, minute){
+    const [lh, la] = expectedGoals(home, away, venue);
+    const elapsed = Math.max(0, Math.min(90, minute || 0));
+    const frac = (90 - elapsed) / 90;
+    const rlh = Math.max(0.001, lh * frac), rla = Math.max(0.001, la * frac);
+    let pH=0, pD=0, pA=0, tot=0;
+    for (let i=0;i<=9;i++){ const ph=pois(i,rlh);
+      for (let j=0;j<=9;j++){ const p=ph*pois(j,rla); tot+=p;
+        const fh=hs+i, fa=as+j;
+        if (fh>fa) pH+=p; else if (fh===fa) pD+=p; else pA+=p; } }
+    return { pHome:pH/tot, pDraw:pD/tot, pAway:pA/tot };
+  }
+
   function cmp(a,b){
     if (b.pts!==a.pts) return b.pts-a.pts;
     const ga=a.gf-a.ga, gb=b.gf-b.ga;
@@ -157,5 +173,5 @@ const MODEL = (() => {
     }).sort((a,b)=> b.pts-a.pts || b.gd-a.gd || b.gf-a.gf || a.team.localeCompare(b.team));
   }
 
-  return { predict, simulate, currentTable, expectedGoals, sideElo };
+  return { predict, simulate, currentTable, expectedGoals, sideElo, liveProbability };
 })();

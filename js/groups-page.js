@@ -52,8 +52,8 @@
     const el = $("#groups-live");
     if (!el) return;
     el.innerHTML = (typeof standingsAreLive === "function" && standingsAreLive())
-      ? `<span><span class="mlive">● LIVE</span> tables updating as games finish</span>`
-      : `<span>📸 Snapshot of 20 Jun · add a free Odds API key for live final scores</span>`;
+      ? `<span><span class="mlive">● LIVE</span> tables updating from real results &amp; in-play games</span>`
+      : `<span>📡 Loading live scores… standings update as games go final</span>`;
   }
 
   function refresh(){
@@ -64,11 +64,26 @@
     updateLiveTag();
   }
 
+  let lastSig = "";
+  function finishedSig(){
+    if (typeof LIVE === "undefined" || !LIVE.scores || typeof pairKey !== "function") return "";
+    return FIXTURES.filter(f => { const s = LIVE.scores[pairKey(f.home,f.away)]; return s && s.completed; })
+                   .map(f => f.home).sort().join(",");
+  }
+
   function boot(){
     updateLiveTag();
-    setTimeout(refresh, 50);
-    if (typeof loadLiveScores === "function"){
-      loadLiveScores().then(ok => { if (ok) refresh(); });
+    setTimeout(() => { refresh(); lastSig = finishedSig(); }, 50);
+    // ESPN live feed (no key): fold real results into the tables, poll for more
+    if (typeof loadEspnLive === "function"){
+      const tick = () => loadEspnLive().then(ok => {
+        if (!ok) return;
+        updateLiveTag();
+        const sig = finishedSig();
+        if (sig !== lastSig){ lastSig = sig; refresh(); }  // a result changed → re-sim
+      });
+      tick();
+      setInterval(tick, 45000);
     }
   }
   document.addEventListener("DOMContentLoaded", boot);

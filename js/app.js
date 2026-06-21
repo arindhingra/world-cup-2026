@@ -29,13 +29,58 @@
     const p = f.date.split("-").map(Number);
     return Date.now() > Date.UTC(p[0], p[1]-1, p[2]+1, 5, 0, 0);
   }
-  function upcomingFixtures(){ return FIXTURES.filter(f => !isFinished(f)); }
+  // in-play record for a fixture (from the live feed), else null
+  function liveOf(f){
+    return (typeof LIVE !== "undefined" && LIVE.inplay && typeof pairKey === "function")
+      ? LIVE.inplay[pairKey(f.home, f.away)] : null;
+  }
+  // upcoming = not finished and not currently live (live games show in their own section)
+  function upcomingFixtures(){ return FIXTURES.filter(f => !isFinished(f) && !liveOf(f)); }
+  function liveFixtures(){ return FIXTURES.filter(f => liveOf(f) && !isFinished(f)); }
+
+  /* ---------------- live now ---------------- */
+  function renderLiveNow(){
+    const box = $("#live-now"), sec = $("#live-section");
+    if (!box) return;
+    const games = liveFixtures();
+    if (sec) sec.style.display = games.length ? "" : "none";
+    box.innerHTML = games.map(liveCard).join("");
+  }
+
+  function liveCard(f){
+    const lv = liveOf(f);
+    const lp = MODEL.liveProbability(f.home, f.away, f.venue, lv.hs, lv.as, lv.minute);
+    const ph=pct(lp.pHome), pd=pct(lp.pDraw), pa=pct(lp.pAway);
+    const hw = lv.hs>lv.as, aw = lv.as>lv.hs;
+    return `<div class="match live">
+      <div class="match-top">
+        <span class="grp-pill">Group ${f.group}</span>
+        <span class="live-chip"><span class="lpulse"></span>LIVE · ${lv.clock}</span>
+      </div>
+      <div class="teams">
+        <div class="team-side"><span class="fl">${fl(f.home)}</span><span class="tn">${f.home}</span></div>
+        <div class="pscore"><span class="ps-val ${hw?'lead':''}">${lv.hs}<span class="dash">–</span>${lv.as}</span><span class="ps-lbl">${lv.detail||'Live'}</span></div>
+        <div class="team-side"><span class="fl">${fl(f.away)}</span><span class="tn">${f.away}</span></div>
+      </div>
+      <div class="probbar">
+        <div class="seg h" style="width:${ph}%">${ph>=11?`<span>${ph}%</span>`:''}</div>
+        <div class="seg d" style="width:${pd}%">${pd>=11?`<span>${pd}%</span>`:''}</div>
+        <div class="seg a" style="width:${pa}%">${pa>=11?`<span>${pa}%</span>`:''}</div>
+      </div>
+      <div class="prob-key">
+        <span><b>${ph}%</b> ${shortName(f.home)}</span>
+        <span><b>${pd}%</b> Draw</span>
+        <span>${shortName(f.away)} <b>${pa}%</b></span>
+      </div>
+      <div class="verdict"><span class="chip">Live win probability</span>· updates with the score &amp; clock</div>
+    </div>`;
+  }
 
   /* ---------------- stat strip ---------------- */
   function renderStats(){
     const played = RESULTS.length ? 34 : 34; // verified: 34 group games played
     $("#stat-remaining").textContent = upcomingFixtures().length;
-    $("#stat-today").textContent = RESULTS.filter(r=>r.date==="2026-06-20").length;
+    $("#stat-today").textContent = liveFixtures().length;
     $("#stat-groups").textContent = 12;
     $("#stat-teams").textContent = 48;
   }
@@ -247,18 +292,37 @@
     const ld = $("#groups-loading"); if (ld) ld.style.display = "none";
   }
 
+  // signature of which games are final — lets us re-run the heavy sim only
+  // when a result actually changes, not on every poll
+  let lastSig = "";
+  function finishedSig(){
+    if (typeof LIVE === "undefined" || !LIVE.scores) return "";
+    return FIXTURES.filter(f => { const s = LIVE.scores[pairKey(f.home,f.away)]; return s && s.completed; })
+                   .map(f => f.home).sort().join(",");
+  }
+
   function boot(){
     renderStats();
     renderResults();
+    renderLiveNow();
     renderPredictions();
     updateOddsStatus();
     // simulation is heavier — defer so it doesn't block first paint
     setTimeout(refreshGroups, 50);
-    // live scores (optional) — drop finished games, update tables + odds
-    if (typeof loadLiveScores === "function"){
-      loadLiveScores().then(ok => { if (ok){ renderResults(); renderStats(); renderPredictions(); refreshGroups(); updateOddsStatus(); } });
+
+    // ESPN live feed (no key): live scores + minutes + real results → standings.
+    // Poll every 45s so scores, the clock and the tables stay current.
+    if (typeof loadEspnLive === "function"){
+      const tick = () => loadEspnLive().then(ok => {
+        if (!ok) return;
+        renderLiveNow(); renderResults(); renderStats(); renderPredictions(); updateOddsStatus();
+        const sig = finishedSig();
+        if (sig !== lastSig){ lastSig = sig; refreshGroups(); }  // a game went final → re-sim
+      });
+      tick();
+      setInterval(tick, 45000);
     }
-    // live odds (optional) — repaint predictions if a key returns data
+    // The Odds API live odds (optional key) — real in-play bookmaker lines
     if (typeof loadLiveOdds === "function"){
       loadLiveOdds().then(ok => { if (ok){ renderPredictions(); updateOddsStatus(); } });
     }

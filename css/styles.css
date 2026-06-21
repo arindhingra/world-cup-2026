@@ -199,6 +199,16 @@ section{position:relative;z-index:1;padding:30px 0}
 .mcell .mteam{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;max-width:100%}
 .mcell b{font-size:13px;font-variant-numeric:tabular-nums;color:var(--text)}
 .mcell .mpc{font-size:11px;color:var(--cyan);font-weight:800}
+
+/* ---- live (in-play) match cards ---- */
+.match.live{border-color:rgba(255,61,119,.5);box-shadow:0 10px 30px rgba(255,61,119,.12)}
+.match.live::before{background:linear-gradient(90deg,var(--magenta),var(--red),var(--gold))}
+.live-chip{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;letter-spacing:.4px;
+  color:#fff;background:linear-gradient(135deg,var(--magenta),var(--red));padding:4px 11px;border-radius:999px;white-space:nowrap}
+.lpulse{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.7);animation:pulse 1.3s infinite}
+.match.live .ps-val{color:#fff;font-size:30px}
+.match.live .ps-val .dash{opacity:.45;margin:0 3px;font-weight:700}
+.match.live .ps-lbl{color:var(--magenta);font-weight:700}
 .mlive{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;letter-spacing:.4px;
   color:#04140d;background:linear-gradient(135deg,var(--green),var(--cyan));padding:3px 9px;border-radius:999px;text-transform:none}
 .odds-status{margin-top:4px;font-size:12px;color:var(--faint);font-weight:600;display:flex;align-items:center;gap:8px}

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
-<link rel="stylesheet" href="css/styles.css?v=2">
+<link rel="stylesheet" href="css/styles.css?v=3">
 </head>
 <body>
 <div class="pitch-pattern"></div>
@@ -40,12 +40,25 @@
     </div>
     <div class="stat-strip">
       <div class="stat"><div class="num" id="stat-remaining">–</div><div class="lbl">Games to predict</div></div>
-      <div class="stat"><div class="num" id="stat-today">–</div><div class="lbl">Played today (Jun 20)</div></div>
+      <div class="stat"><div class="num" id="stat-today">–</div><div class="lbl">Live now</div></div>
       <div class="stat"><div class="num" id="stat-groups">–</div><div class="lbl">Groups</div></div>
       <div class="stat"><div class="num" id="stat-teams">–</div><div class="lbl">Nations</div></div>
     </div>
   </div>
 </header>
+
+<!-- LIVE NOW -->
+<section id="live-section" style="display:none">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2><span class="tag">🔴</span> Live Now</h2>
+        <p>Matches in progress — real-time score, match minute and a win probability that shifts with the action. Refreshes automatically every 45 seconds.</p>
+      </div>
+    </div>
+    <div class="match-grid" id="live-now"></div>
+  </div>
+</section>
 
 <!-- RESULTS STRIP -->
 <section>
@@ -140,6 +153,7 @@
 <script src="js/model.js"></script>
 <script src="js/config.js"></script>
 <script src="js/odds-live.js"></script>
+<script src="js/espn-live.js"></script>
 <script src="js/standings.js"></script>
 <script src="js/app.js"></script>
 </body>
