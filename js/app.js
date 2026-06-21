@@ -58,7 +58,7 @@
       return `<div class="daygroup">
         <div class="dayhdr">
           <span class="d-date">${dd.full}</span>
-          <span class="d-badge">${date==="2026-06-21"?"Up next":matchdayLabel(byDate[date])}</span>
+          <span class="d-badge">${date==="2026-06-20"?"● Today":date==="2026-06-21"?"Up next":matchdayLabel(byDate[date])}</span>
           <span class="d-line"></span>
           <span class="d-count">${byDate[date].length} matches</span>
         </div>

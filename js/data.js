@@ -168,9 +168,10 @@ const RESULTS = [
    The model predicts every one of these.
    ===================================================================== */
 const FIXTURES = [
+  // ---------- Saturday 20 June (today) ----------
+  { date:"2026-06-20", group:"E", home:"Ecuador", away:"Curaçao",        venue:"Arrowhead Stadium, Kansas City" },
+  { date:"2026-06-20", group:"F", home:"Tunisia", away:"Japan",          venue:"Estadio BBVA, Guadalupe" },
   // ---------- Sunday 21 June ----------
-  { date:"2026-06-21", group:"E", home:"Ecuador", away:"Curaçao",        venue:"Arrowhead Stadium, Kansas City" },
-  { date:"2026-06-21", group:"F", home:"Tunisia", away:"Japan",          venue:"Estadio BBVA, Guadalupe" },
   { date:"2026-06-21", group:"G", home:"Belgium", away:"Iran",           venue:"SoFi Stadium, Inglewood" },
   { date:"2026-06-21", group:"G", home:"New Zealand", away:"Egypt",      venue:"BC Place, Vancouver" },
   { date:"2026-06-21", group:"H", home:"Spain", away:"Saudi Arabia",     venue:"Mercedes-Benz Stadium, Atlanta" },
