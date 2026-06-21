@@ -222,12 +222,28 @@ const FIXTURES = [
    Snapshot taken ~20–21 Jun 2026; odds move up to kick-off.
    Keyed "Home|Away" to match the fixtures above.
    ===================================================================== */
+const MARKET_ASOF = "20–21 Jun 2026";
 const MARKET = {
-  "Spain|Saudi Arabia":      { h:"-1200", d:"+900", a:"+2200", ph:0.87, pd:0.09, pa:0.04, book:"bet365" },
+  // ---- Saturday 20 June ----
+  "Tunisia|Japan":           { h:"+600",  d:"+310", a:"-185",  ph:0.14, pd:0.23, pa:0.63, book:"FanDuel" },
+  // ---- Sunday 21 June ----
   "Belgium|Iran":            { h:"-250",  d:"+360", a:"+700",  ph:0.68, pd:0.21, pa:0.12, book:"consensus" },
+  "Spain|Saudi Arabia":      { h:"-1200", d:"+900", a:"+2200", ph:0.87, pd:0.09, pa:0.04, book:"bet365" },
+  "Uruguay|Cape Verde":      { h:"-209",  d:"+320", a:"+650",  ph:0.65, pd:0.23, pa:0.12, book:"bet365" },
+  // ---- Monday 22 June ----
+  "France|Iraq":             { h:"-500",  d:"+600", a:"+1200", ph:0.79, pd:0.14, pa:0.07, book:"bet365" },
   "Argentina|Austria":       { h:"-167",  d:"+300", a:"+475",  ph:0.60, pd:0.24, pa:0.17, book:"bet365" },
+  // ---- Tuesday 23 June ----
+  "Portugal|Uzbekistan":     { h:"-350",  d:"+475", a:"+900",  ph:0.74, pd:0.16, pa:0.10, book:"bet365" },
   "England|Ghana":           { h:"-426",  d:"+567", a:"+1329", ph:0.79, pd:0.15, pa:0.07, book:"DraftKings" },
+  // ---- Wednesday 24 June ----
+  "Switzerland|Canada":      { h:"+145",  d:"+220", a:"+225",  ph:0.40, pd:0.30, pa:0.30, book:"Oddschecker" },
+  "Scotland|Brazil":         { h:"+800",  d:"+175", a:"-250",  ph:0.09, pd:0.31, pa:0.60, book:"Oddschecker" },
+  // ---- Thursday 25 June ----
   "Türkiye|United States":   { h:"+150",  d:"+285", a:"+160",  ph:0.38, pd:0.25, pa:0.37, book:"DraftKings" },
+  "Ecuador|Germany":         { h:"+500",  d:"+320", a:"-195",  ph:0.16, pd:0.22, pa:0.62, book:"consensus" },
+  "Japan|Sweden":            { h:"+120",  d:"+240", a:"+250",  ph:0.44, pd:0.28, pa:0.28, book:"Oddschecker" },
+  // ---- Friday 26 June ----
   "Norway|France":           { h:"+330",  d:"+290", a:"-140",  ph:0.22, pd:0.24, pa:0.54, book:"ESPN" }
 };
 

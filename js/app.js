@@ -88,7 +88,7 @@
     const eh = Math.round(p.eloHome), ea = Math.round(p.eloAway);
 
     // ---- model favourite, underdog risk, market cross-check ----
-    const mk = MARKET[`${f.home}|${f.away}`];
+    const mk = getMarket(f);   // live odds if available, else verified snapshot
     const sideOf = (h,dr,a) => (h>=a && h>=dr) ? 'H' : (a>=h && a>=dr) ? 'A' : 'D';
     const modelFav = sideOf(p.pHome, p.pDraw, p.pAway);
     const homeStronger = p.eloHome >= p.eloAway;
@@ -145,14 +145,29 @@
     </div>`;
   }
 
+  // resolve market odds for a fixture: live (unordered pair) first, else snapshot
+  function getMarket(f){
+    if (typeof LIVE !== "undefined" && LIVE.odds && typeof pairKey === "function"){
+      const lv = LIVE.odds[pairKey(f.home, f.away)];
+      if (lv) return { ph:lv[f.home], pd:lv.draw, pa:lv[f.away], book:`live · avg of ${lv.books} books`, live:true };
+    }
+    const s = MARKET[`${f.home}|${f.away}`];
+    return s ? Object.assign({ live:false }, s) : null;
+  }
+
   function marketBlock(f, mk){
     const m = x => Math.round(x*100);
+    const cell = (team, odds, p) =>
+      `<div class="mcell"><span class="mteam">${team}</span>${odds?`<b>${odds}</b>`:``}<span class="mpc">${m(p)}%</span></div>`;
+    const right = mk.live
+      ? `<span class="mlive">● LIVE · ${mk.book.replace('live · ','')}</span>`
+      : `<span class="book">${mk.book} · ${MARKET_ASOF}</span>`;
     return `<div class="market">
-      <div class="market-top"><span>📈 Betting market</span><span class="book">${mk.book} · de-vigged</span></div>
+      <div class="market-top"><span>📈 Betting market</span>${right}</div>
       <div class="market-cells">
-        <div class="mcell"><span class="mteam">${shortName(f.home)}</span><b>${mk.h}</b><span class="mpc">${m(mk.ph)}%</span></div>
-        <div class="mcell"><span class="mteam">Draw</span><b>${mk.d}</b><span class="mpc">${m(mk.pd)}%</span></div>
-        <div class="mcell"><span class="mteam">${shortName(f.away)}</span><b>${mk.a}</b><span class="mpc">${m(mk.pa)}%</span></div>
+        ${cell(shortName(f.home), mk.h, mk.ph)}
+        ${cell('Draw', mk.d, mk.pd)}
+        ${cell(shortName(f.away), mk.a, mk.pa)}
       </div>
     </div>`;
   }
@@ -192,10 +207,21 @@
   }
 
   /* ---------------- boot ---------------- */
+  function updateOddsStatus(){
+    const el = $("#odds-status");
+    if (!el) return;
+    const n = FIXTURES.filter(f => getMarket(f)).length;
+    const live = (typeof LIVE !== "undefined" && LIVE.status === "live");
+    el.innerHTML = live
+      ? `<span class="mlive">● LIVE odds</span> The Odds API · all ${n} games`
+      : `Market snapshot · ${MARKET_ASOF} · ${n} of ${FIXTURES.length} games`;
+  }
+
   function boot(){
     renderStats();
     renderResults();
     renderPredictions();
+    updateOddsStatus();
     // simulation is heavier — run after first paint
     requestAnimationFrame(()=>{
       setTimeout(()=>{
@@ -204,6 +230,10 @@
         $("#groups-loading").style.display="none";
       }, 30);
     });
+    // live odds (optional) — repaint predictions if a key returns data
+    if (typeof loadLiveOdds === "function"){
+      loadLiveOdds().then(ok => { if (ok){ renderPredictions(); updateOddsStatus(); } });
+    }
   }
   document.addEventListener("DOMContentLoaded", boot);
 })();
