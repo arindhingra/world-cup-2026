@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Cup 2026 · Group Stage Predictor</title>
+<meta name="description" content="Analytical predictions for the remaining 2026 FIFA World Cup group-stage matches — team strength, form and Monte Carlo qualification odds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="pitch-pattern"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="index.html" class="brand">
+      <span class="crest">⚽</span>
+      <div><b>World Cup 2026</b><span>Group-Stage Analytics</span></div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Predictions</a>
+      <a href="history.html"><span class="hide-sm">Past </span>Champions</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker"><span class="live-dot"></span> Live · Group Stage · Canada · Mexico · USA</div>
+    <h1>The Remaining Group Stage,<br>Decoded by the Numbers</h1>
+    <p class="sub">Score predictions for every group game from <b>Sunday 21 June</b> to the final whistle of the group phase — built on live <b>World Football Elo</b> ratings, host advantage and an <b>Opta-calibrated</b> goal model, run over 15,000 simulated tournaments.</p>
+    <div class="host-row">
+      <span>🇨🇦 Canada</span><span>🇲🇽 Mexico</span><span>🇺🇸 United States</span><span>📅 11 Jun – 19 Jul 2026</span>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><div class="num" id="stat-remaining">–</div><div class="lbl">Games to predict</div></div>
+      <div class="stat"><div class="num" id="stat-today">–</div><div class="lbl">Played today (Jun 20)</div></div>
+      <div class="stat"><div class="num" id="stat-groups">–</div><div class="lbl">Groups</div></div>
+      <div class="stat"><div class="num" id="stat-teams">–</div><div class="lbl">Nations</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- RESULTS STRIP -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2><span class="tag">📋</span> Latest Results</h2>
+        <p>The most recent group games — including today's fixtures — feed directly into the form model.</p>
+      </div>
+    </div>
+    <div class="results-scroll" id="results"></div>
+  </div>
+</section>
+
+<!-- PREDICTIONS -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2><span class="tag">🔮</span> Remaining Match Predictions</h2>
+        <p>Win / draw / loss probabilities and a projected scoreline for all 38 remaining group-stage matches, grouped by matchday. Headline games carry a live <b>betting-market cross-check</b>.</p>
+      </div>
+      <div class="pred-legend">
+        <span class="alert upset">⚠ Upset alert</span><small>strong favourite, live underdog</small>
+        <span class="alert split">⚡ Model ⇄ Market split</span><small>model &amp; bookies disagree on the favourite</small>
+      </div>
+    </div>
+    <div id="predictions"></div>
+  </div>
+</section>
+
+<!-- GROUP STANDINGS + QUALIFICATION -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2><span class="tag">📊</span> Standings &amp; Qualification Odds</h2>
+        <p>Current tables with each nation's simulated probability of reaching the Round of 32 — top two of every group qualify, joined by the eight best third-placed teams.</p>
+      </div>
+    </div>
+    <div class="loading" id="groups-loading"><span class="spinner"></span> Running 15,000 tournament simulations…</div>
+    <div class="groups-grid" id="groups"></div>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section>
+  <div class="wrap">
+    <div class="method">
+      <h3>🧮 How the model works — and what it's built on</h3>
+      <div class="method-grid">
+        <div class="m">
+          <div class="n">1</div>
+          <h4>World Football Elo</h4>
+          <p>Strength comes from published <b>Elo ratings</b> (worldfootballrankings.com, updated 21 Jun 2026), which already absorb every result so far in this World Cup — so live form is built in objectively, not guessed.</p>
+        </div>
+        <div class="m">
+          <div class="n">2</div>
+          <h4>Host home edge</h4>
+          <p>Mexico, the USA and Canada get a calibrated Elo boost <b>only when playing in their own country</b> — e.g. Mexico at the Azteca, Canada at BC Place — matching the real crowd advantage hosts enjoy.</p>
+        </div>
+        <div class="m">
+          <div class="n">3</div>
+          <h4>Opta-calibrated goals</h4>
+          <p>The Elo gap sets each side's expected goals through a Poisson model <b>tuned to the Opta supercomputer's</b> published match odds, then read out as win/draw/loss and the most-likely exact score.</p>
+        </div>
+        <div class="m">
+          <div class="n">4</div>
+          <h4>15,000 simulations</h4>
+          <p>Every remaining game is simulated 15,000 times to estimate each nation's chance of finishing top-two or advancing as one of the eight best third-placed teams.</p>
+        </div>
+        <div class="m">
+          <div class="n">5</div>
+          <h4>Market cross-check</h4>
+          <p>Headline games show the live <b>betting market</b> (de-vigged moneyline) beside the model. Where they disagree on the favourite, a <b>Model ⇄ Market split</b> flag fires — often a sign of squad rotation in an already-decided group.</p>
+        </div>
+      </div>
+      <p class="note"><b>Sources:</b> Elo strength — <b>worldfootballrankings.com</b> / eloratings.net (the model is anchored to the official Elo win-expectancy formula) · validated against the <b>Opta supercomputer</b> (theanalyst.com) and the <b>FIFA World Ranking</b> · market odds — bet365, DraftKings &amp; ESPN, snapshot 20–21 Jun 2026. Fixtures, results, venues and standings verified against official FIFA group pages on 20 Jun 2026. A handful of lower-ranked nations' Elo are estimated on the same scale from their FIFA ranking. Predictions are probabilities, not guarantees — that's the fun of the World Cup.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>World Cup 2026 Group-Stage Analytics</b> — an independent, data-driven fan project.<br>
+    Fixtures &amp; results verified 20 June 2026 · Predictions by power-index + Poisson + Monte Carlo model · Not affiliated with FIFA.</p>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/model.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
