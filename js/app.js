@@ -54,6 +54,7 @@
     const aScore = (f.home === lv.home) ? lv.as : lv.hs;
     const lp = MODEL.liveProbability(f.home, f.away, f.venue, hScore, aScore, lv.minute);
     const ph=pct(lp.pHome), pd=pct(lp.pDraw), pa=pct(lp.pAway);
+    const mk = getMarket(f);   // live odds if a key is set, else the pre-match line
     return `<div class="match live">
       <div class="match-top">
         <span class="grp-pill">Group ${f.group}</span>
@@ -76,6 +77,7 @@
       </div>
       ${wpChart(f, lv, hScore, aScore)}
       <div class="verdict"><span class="chip">Live win probability</span>· updates with the score &amp; clock</div>
+      ${mk ? marketBlock(f, mk, true) : ``}
     </div>`;
   }
 
@@ -271,15 +273,18 @@
     return s ? Object.assign({ live:false }, s) : null;
   }
 
-  function marketBlock(f, mk){
+  function marketBlock(f, mk, gameLive){
     const m = x => Math.round(x*100);
     const cell = (team, odds, p) =>
       `<div class="mcell"><span class="mteam">${team}</span>${odds?`<b>${odds}</b>`:``}<span class="mpc">${m(p)}%</span></div>`;
     const right = mk.live
       ? `<span class="mlive">● LIVE · ${mk.book.replace('live · ','')}</span>`
-      : `<span class="book">${mk.book}${mk.est?'*':''} · ${MARKET_ASOF}</span>`;
+      : gameLive
+        ? `<span class="book">pre-match · ${mk.book}${mk.est?'*':''}</span>`
+        : `<span class="book">${mk.book}${mk.est?'*':''} · ${MARKET_ASOF}</span>`;
+    const title = (!mk.live && gameLive) ? "📈 Pre-match market" : "📈 Betting market";
     return `<div class="market">
-      <div class="market-top"><span>📈 Betting market</span>${right}</div>
+      <div class="market-top"><span>${title}</span>${right}</div>
       <div class="market-cells">
         ${cell(shortName(f.home), mk.h, mk.ph)}
         ${cell('Draw', mk.d, mk.pd)}
