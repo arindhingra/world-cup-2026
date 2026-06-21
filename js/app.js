@@ -54,7 +54,16 @@
     const aScore = (f.home === lv.home) ? lv.as : lv.hs;
     const lp = MODEL.liveProbability(f.home, f.away, f.venue, hScore, aScore, lv.minute);
     const ph=pct(lp.pHome), pd=pct(lp.pDraw), pa=pct(lp.pAway);
-    const mk = getMarket(f);   // live odds if a key is set, else the pre-match line
+    // live in-play odds from ESPN (DraftKings) if available, else pre-match line
+    let mk;
+    if (lv.liveOdds){
+      const lo = lv.liveOdds, same = (f.home === lo.home);
+      mk = { live:true, book:lo.book,
+             h: same?lo.hOdds:lo.aOdds, d: lo.dOdds, a: same?lo.aOdds:lo.hOdds,
+             ph: same?lo.ph:lo.pa, pd: lo.pd, pa: same?lo.pa:lo.ph };
+    } else {
+      mk = getMarket(f);
+    }
     return `<div class="match live">
       <div class="match-top">
         <span class="grp-pill">Group ${f.group}</span>
@@ -282,7 +291,7 @@
       : gameLive
         ? `<span class="book">pre-match · ${mk.book}${mk.est?'*':''}</span>`
         : `<span class="book">${mk.book}${mk.est?'*':''} · ${MARKET_ASOF}</span>`;
-    const title = (!mk.live && gameLive) ? "📈 Pre-match market" : "📈 Betting market";
+    const title = mk.live ? "📈 Live betting market" : (gameLive ? "📈 Pre-match market" : "📈 Betting market");
     return `<div class="market">
       <div class="market-top"><span>${title}</span>${right}</div>
       <div class="market-cells">

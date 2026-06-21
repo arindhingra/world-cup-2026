@@ -15,6 +15,12 @@
 const ESPN_URL =
   "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard";
 
+/* live in-play odds cached per game (the ESPN live entry is intermittent,
+   so we keep the last seen line rather than flickering back to pre-match) */
+const LIVE_ODDS_CACHE = {};
+const _amer = ml => (ml > 0 ? "+" : "") + Math.round(ml);
+const _impl = ml => ml > 0 ? 100/(ml+100) : (-ml)/((-ml)+100);
+
 function espnMinute(clock, state, detail){
   if (state === "post") return 90;
   if (/half/i.test(detail||"") || /HT/i.test(clock||"")) return 45;
@@ -96,7 +102,25 @@ async function loadLiveTimelines(){
       }
       goals.sort((a, b) => a.minute - b.minute);
       ip.goals = goals;
-    } catch (_){ /* leave goals undefined → card just omits the chart */ }
+
+      // live in-play odds (ESPN's "DraftKings - Live Odds" provider)
+      const le = (d.odds || []).find(o => /live/i.test(((o.provider || {}).name) || ""));
+      if (le){
+        const hMl = (le.homeTeamOdds || {}).moneyLine;
+        const aMl = (le.awayTeamOdds || {}).moneyLine;
+        const dMl = (le.drawOdds || {}).moneyLine;
+        if (hMl != null && aMl != null && dMl != null){
+          const ih = _impl(hMl), id = _impl(dMl), ia = _impl(aMl), s = ih + id + ia;
+          LIVE_ODDS_CACHE[key] = {
+            home: ip.home, away: ip.away,
+            hOdds: _amer(hMl), aOdds: _amer(aMl), dOdds: _amer(dMl),
+            ph: ih/s, pd: id/s, pa: ia/s,
+            book: (((le.provider || {}).name) || "DraftKings").replace(/\s*-\s*Live Odds/i, "")
+          };
+        }
+      }
+      if (LIVE_ODDS_CACHE[key]) ip.liveOdds = LIVE_ODDS_CACHE[key];
+    } catch (_){ /* leave goals/odds undefined → card falls back gracefully */ }
   }));
   return true;
 }
