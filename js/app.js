@@ -350,6 +350,7 @@
 
   // standings + qualification odds, rebuilt from any live final scores
   function refreshGroups(){
+    if (!$("#groups")) return;   // standings live on the Groups page now
     const standings = effectiveStandings();
     const odds = MODEL.simulate(15000, standings, remainingForSim());
     renderGroups(odds, standings);
