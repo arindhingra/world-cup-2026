@@ -14,6 +14,14 @@
     return { dow: DOW[dt.getUTCDay()], label: `${MON[m-1]} ${d}`, full:`${DOW[dt.getUTCDay()]}, ${MON[m-1]} ${d}` };
   }
 
+  // current match-day as YYYY-MM-DD in US Eastern (the schedule's reference zone),
+  // recomputed on every render so "Today" stays correct as the date rolls over
+  function todayStr(){
+    try { return new Intl.DateTimeFormat("en-CA", { timeZone:"America/New_York" }).format(new Date()); }
+    catch(_){ const d=new Date(), p=n=>String(n).padStart(2,"0");
+      return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; }
+  }
+
   /* ---------------- finished-game detection (auto-remove) ---------------- */
   // A game is "finished" when (1) the live scores feed marks it complete
   // (exact, needs an API key) or (2) — with no key — 2.5 hours have elapsed
@@ -152,8 +160,9 @@
     // merge any live-feed finals (deduped) ahead of the curated results
     const seen = new Set(RESULTS.map(r=>r.home+"|"+r.away));
     const merged = liveFinalsList().filter(r=>!seen.has(r.home+"|"+r.away)).concat(RESULTS);
+    const TODAY = todayStr();
     box.innerHTML = merged.map(r=>{
-      const today = r.date==="2026-06-20";
+      const today = r.date===TODAY;
       const hw = r.hs>r.as, aw = r.as>r.hs;
       const dd = fmtDate(r.date);
       return `<div class="res-card ${today?'today':''}">
@@ -179,13 +188,16 @@
     const dates = Object.keys(byDate).sort();
     if (!dates.length){ box.innerHTML = `<div class="loading">All group-stage games are complete. 🏁</div>`; return; }
 
+    const TODAY = todayStr();
+    const firstFuture = dates.find(d => d > TODAY);  // soonest day after today
     box.innerHTML = dates.map(date=>{
       const dd = fmtDate(date);
       const cards = byDate[date].map(f=>matchCard(f)).join("");
+      const badge = date===TODAY ? "● Today" : date===firstFuture ? "Up next" : matchdayLabel(byDate[date]);
       return `<div class="daygroup">
         <div class="dayhdr">
           <span class="d-date">${dd.full}</span>
-          <span class="d-badge">${date==="2026-06-20"?"● Today":date==="2026-06-21"?"Up next":matchdayLabel(byDate[date])}</span>
+          <span class="d-badge">${badge}</span>
           <span class="d-line"></span>
           <span class="d-count">${byDate[date].length} matches</span>
         </div>
