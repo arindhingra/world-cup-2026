@@ -20,6 +20,8 @@ const ESPN_URL =
 const LIVE_ODDS_CACHE = {};
 const _amer = ml => (ml > 0 ? "+" : "") + Math.round(ml);
 const _impl = ml => ml > 0 ? 100/(ml+100) : (-ml)/((-ml)+100);
+const _probToAmer = p => { p = Math.min(0.99, Math.max(0.01, p));
+  return p >= 0.5 ? "-" + Math.round(p/(1-p)*100) : "+" + Math.round((1-p)/p*100); };
 
 function espnMinute(clock, state, detail){
   if (state === "post") return 90;
@@ -103,18 +105,27 @@ async function loadLiveTimelines(){
       goals.sort((a, b) => a.minute - b.minute);
       ip.goals = goals;
 
-      // live in-play odds (ESPN's "DraftKings - Live Odds" provider)
+      // live in-play odds (ESPN's "DraftKings - Live Odds" provider).
+      // The entry is intermittent and can ship a null leg, so accept any line
+      // with ≥2 of 3 present and back out the missing leg from the over-round.
       const le = (d.odds || []).find(o => /live/i.test(((o.provider || {}).name) || ""));
       if (le){
-        const hMl = (le.homeTeamOdds || {}).moneyLine;
-        const aMl = (le.awayTeamOdds || {}).moneyLine;
-        const dMl = (le.drawOdds || {}).moneyLine;
-        if (hMl != null && aMl != null && dMl != null){
-          const ih = _impl(hMl), id = _impl(dMl), ia = _impl(aMl), s = ih + id + ia;
+        const raw = { h:(le.homeTeamOdds||{}).moneyLine, d:(le.drawOdds||{}).moneyLine, a:(le.awayTeamOdds||{}).moneyLine };
+        const present = ["h","d","a"].filter(k => raw[k] != null);
+        if (present.length >= 2){
+          const imp = {}; let known = 0;
+          present.forEach(k => { imp[k] = _impl(raw[k]); known += imp[k]; });
+          const missing = ["h","d","a"].filter(k => raw[k] == null);
+          if (missing.length){                          // share remaining book margin
+            const rem = Math.max(0.02, 1.06 - known);
+            missing.forEach(k => imp[k] = rem / missing.length);
+          }
+          const s = imp.h + imp.d + imp.a;
+          const oddsStr = k => raw[k] != null ? _amer(raw[k]) : _probToAmer(imp[k]);
           LIVE_ODDS_CACHE[key] = {
             home: ip.home, away: ip.away,
-            hOdds: _amer(hMl), aOdds: _amer(aMl), dOdds: _amer(dMl),
-            ph: ih/s, pd: id/s, pa: ia/s,
+            hOdds: oddsStr("h"), dOdds: oddsStr("d"), aOdds: oddsStr("a"),
+            ph: imp.h/s, pd: imp.d/s, pa: imp.a/s,
             book: (((le.provider || {}).name) || "DraftKings").replace(/\s*-\s*Live Odds/i, "")
           };
         }
