@@ -12,8 +12,11 @@
 
    Fully defensive: any failure leaves the verified snapshot in place.
    ===================================================================== */
+// Pull the ENTIRE group-stage date range, not ESPN's default rolling window —
+// otherwise once the date advances, earlier results drop out of the feed and
+// the standings lose them. The range returns every group-stage game at once.
 const ESPN_URL =
-  "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard";
+  "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260627";
 
 /* live in-play odds cached per game (the ESPN live entry is intermittent,
    so we keep the last seen line rather than flickering back to pre-match) */
